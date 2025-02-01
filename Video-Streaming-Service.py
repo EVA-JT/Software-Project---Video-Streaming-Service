@@ -5,7 +5,9 @@ user_data = {}
 logged_user = "sample"
 choosen_profile = "sample"
 
-genres_list = ["action", "comedy", "romance"] 
+# --- DATABASE DE FILMES E GENEROS ---
+
+genres_list = ["action", "comedy", "romance"]
 
 movie_catalog = {
     "action": {
@@ -43,11 +45,18 @@ show_catalog = {
     }
 }
 
+all_catalog = {
+    "movie": movie_catalog,
+    "show": show_catalog
+}
+
+# ------
+
 #Cria uma conta do usuario, usando email, uma senha e o plano de pagamento e salva essas informações no dicionario de dados do usuario
 def create_a_user():
     while(1): # Loop até um email novo ser digitado      
         email = input("Enter your email: ")
-        if email in user_data:
+        if email in user_data: #Se o email já estiver na database
             print("This email has already been registered, please try again.")
         else:
             break
@@ -64,7 +73,7 @@ def create_a_user():
     print("After your 7-day free trial, what type of payment plan would you like?\n1 - Monthly\n2 - quarterly\n3 - Annual")
     payment_plan = int(input())
 
-    user_data[email] = { #A "chave" da variavel email corresponde a essas informações
+    user_data[email] = { #A "chave" da variavel 'email' corresponde a essas informações
         'password': password,
         'payment_plan': payment_plan
     }
@@ -74,15 +83,15 @@ def user_login():
     email = input("Enter your email: ")
     password = input("Enter your password again: ")
     
-    if email in user_data and user_data[email]['password'] == password:
-        global logged_user
+    if email in user_data and user_data[email]['password'] == password: # checa se o email está presente em user_data, se sim, checa se a senha digitada bate com a do dicionario
+        global logged_user # variavel global (tem que ser declarada assim sempre que for usar)
         logged_user = email
 
         input("Login succesful, press enter to continue.")
-        return 1
+        return 1 #sucesso
     else:
         input("Wrong email or password, try again or create an account.")
-        return 0
+        return 0 #falha
 
 #Imprime todos os perfis criados no momento
 def print_profiles():
@@ -97,13 +106,54 @@ def create_profile():
     last_name = input("Last name: ")
     age = input("Your age: ")
 
+    while(1):
+        category_preference = input("Do you prefer: movies, shows or both? ")
+        category_preference = category_preference.lower()
+
+        if category_preference == "movies" or category_preference == "shows":
+            category_preference = category_preference[:-1] # remove a ultima letra 's'
+            break
+
+        elif category_preference == "both":
+            category_preference = "all"
+            break
+
+        else:
+            input("Category not available. Press enter to try again")
+
+    g_l = genres_list.copy() #copia a lista de generos para g_l
+    fav_genres = []
+    while (len(g_l) >= 1):
+        print("Enter your favorite genres or 'cancel' to exit.")
+        for genre in g_l:
+            print(f"{genre.title()} | ", end='') #printa os generos disponiveis
+
+        opt = input("\n")
+        opt = opt.lower()
+
+        if opt == "cancel":
+            break
+
+        elif opt in genres_list and opt not in fav_genres: #se o genero digitado estiver em genres_list e não estiver em fav_genres, ele é adicionado
+            fav_genres.append(opt)
+            g_l.remove(opt)
+
+        else:
+            input("This genre is not availabe. Press enter to try again.")
+
+    if not fav_genres: #se a lista estiver vazia então os generos favoritos serão todos (genres_list)
+        fav_genres = genres_list.copy()
+
     profile = {
         'first': first_name,
         'last': last_name, 
-        'age':age,
+        'age': age,
+        'c_preference': category_preference,
+        'g_preference': fav_genres,
         'bookmarks': [],
         'w_history': []
     }
+
     profile_list.append(profile)
     return profile
 
@@ -176,9 +226,14 @@ def account_management():
             return 1
 
 #Mostra as informações de um filme/show escolhido usando o genero, categoria e titulo
+#GENRE: uma string correspondete a algum item de genre_list[]
+#CATEGORY: uma string "movie" ou "show"
+#TITLE: uma string que corresponde a algum filme/show da database
 def show_details(genre, category, title):
     global choosen_profile 
     os.system('cls')
+
+    #escolhe qual catalogo usar
     if category == "movie":
         choosen_one = movie_catalog[genre][title]
     else:
@@ -188,6 +243,7 @@ def show_details(genre, category, title):
 
     opt = int(input("1 - Watch\n2 - Bookmark it\n3 - Exit\n"))
 
+    #salva o item assistido no histórico
     if opt == 1:
         history = {
             'genre': genre,
@@ -196,7 +252,7 @@ def show_details(genre, category, title):
         }
         choosen_profile['w_history'].append(history)
         input(f"You've just watched {title}. Press enter to continue")
-
+    #salva o item nos bookmarks
     elif opt == 2:
         bookmark = {
             'genre': genre,
@@ -208,8 +264,49 @@ def show_details(genre, category, title):
     
     return
 
+#Mostra o catalogo baseado nos parametros
+#CATEGORY: uma string que pode ser "movie", "show" ou "all"
+#GENRE: uma lista de strings ou uma string que pode ser qualquer genero da genres_list[]
+def show_catalogs(category, genre):
+    os.system('cls')
+    i = 1
+    titles = []
+    if isinstance(genre, str): #se 'genre' for uma string, transforma ela em uma lista
+        genre = [genre]
+
+    if category == "movie" or category == "all":
+        print("Movies:")
+        for gen in genre:
+            print(f"\n{gen.title()}:")
+
+            for movie in movie_catalog[gen].keys():
+                print(f"{i} - {movie} | ", end='')
+                i += 1
+                titles.append((gen, "movie", movie)) #guarda a tupla do genero, categoria e titulo do filme
+
+    
+    if category == "show" or category == "all":
+        print("\n\nShows:")
+        for gen in genre:
+            print(f"\n{gen.title()}")
+
+            for show in show_catalog[gen].keys():
+                print(f"{i} - {show} | ", end='')
+                i += 1
+                titles.append((gen, "show", show))
+
+    opt = int(input(f"\n\nEnter the number of wich item you want to watch: "))
+    genre_c, category_c, title_c = titles[opt - 1] #como o i começa em 1, opt deve ser subtraida
+
+    show_details(genre_c, category_c, title_c)
+
+#Passa as informações de genero e categoria favoritos do perfil para o show_catalogs()
 def recommendations_page():
-    print("W.I.P :)")
+    global choosen_profile
+    category = choosen_profile['c_preference']
+    genres = choosen_profile['g_preference']
+
+    show_catalogs(category, genres)
 
 #Lista os generos a serem escolhidos
 def genre_page():
@@ -218,15 +315,15 @@ def genre_page():
         print("Enter the genre to browse on or type 'exit' to cancel.")
 
         for i in range(len(genres_list)):
-            print(f"{genres_list[i].title()}")
+            print(f"{genres_list[i].title()} | ", end='')
 
-        opt = str(input())
+        opt = str(input("\n"))
         opt = opt.lower() #deixa a escolha em letras minusculas
 
         if opt == "exit":
             return
         elif opt in genres_list:
-            show_catalog_genre(opt)
+            show_catalogs("all", opt)
         else:
             input("This genre is not availabe, press enter to try again")
 
@@ -242,7 +339,7 @@ def category_page():
         if opt == "exit":
             return
         elif opt == "movie" or opt == "show":
-            show_catalog_category(opt)
+            show_catalogs(opt, genres_list)
         else:
             input("This category is not availabe, press enter to try again")
 
@@ -284,69 +381,7 @@ def watch_history_page():
         sel = w_list[opt - 1]
         show_details(sel['genre'], sel['category'], sel['title'])
 
-
-#Lista o catálogo baseado na escolha de categoria
-def show_catalog_category(option):
-    os.system('cls')
-    print(f"Category: {option}")
-    i = 1
-    titles = []
-
-    #TO DO: os dois loops podem se tornar um
-
-    if option == "movie":
-        for genre in genres_list:
-            print(f"\n\nGenre: {genre}")
-
-            for movie in movie_catalog[genre].keys():
-                print(f"{i} - {movie} | ", end='')
-                i += 1
-                titles.append((genre, movie)) #guarda a tupla do genero e titulo do filme
-    
-    if option == "show":
-        for genre in genres_list:
-            print(f"\n\nGenre: {genre}")
-
-            for show in show_catalog[genre].keys():
-                print(f"{i} - {show} | ", end='')
-                i += 1
-                titles.append((genre, show))
-
-    opt = int(input(f"\n\nEnter the number of wich {option} you want to watch: "))
-    genre, title = titles[opt - 1] #como o i começa em 1, opt deve ser subtraida
-
-    show_details(genre, option, title)
-
-#Lista o catálogo baseado na escolha do genero
-def show_catalog_genre(option):
-    os.system('cls')
-    print(f"Genre: {option}")
-    i = 1
-    titles = []
-
-    print("Movies:\n")
-    for movie in movie_catalog[option].keys():
-        print(f"{i} - {movie} | ", end='')
-        i += 1
-        titles.append((option, movie)) #guarda a tupla da categoria e titulo do filme
-
-    print("\n\nShows:\n")
-    for show in show_catalog[option].keys():
-        print(f"{i} - {show} | ", end='')
-        i += 1
-        titles.append((option, show))
-
-    opt = int(input("\n\nEnter the number of wich you want to watch: "))
-    genre, title = titles[opt - 1]
-
-    if opt < len(movie_catalog[option]):
-        category = "movie"
-    else:
-        category = "show"
-
-    show_details(genre, category, title)
-
-# ----Menus----
+# ----MENUS----
 
 # Menu de login, 
 def login_menu():
@@ -412,5 +447,6 @@ def main_menu():
         elif opt == 6:
             return
 
+#---
     
 login_menu()
