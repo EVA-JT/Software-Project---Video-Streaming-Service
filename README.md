@@ -19,7 +19,7 @@ Implementada, na criação de perfil o usuario pode escolher qual categoria e ge
 Implementada, ao assistir algo pela primeira vez em um perfil, o usuario pode escolher com que qualidade assistir-lo, podendo escolher entre low, medium e high. Essa escolha pode ser configurada na página de detalhes do item. O programa sempre recomendará high para o usuario;
 
 ### • Content Rating and Reviews:
-A ser implementada;
+Implementada, os usuarios podem ver e deixar uma review. Essas informações ficarão salvas nas informações do filme.;
 
 ### • Ad Integration and Management:
 A ser implementada, com banners e/ou conteúdo patrocinado no catálogo.
