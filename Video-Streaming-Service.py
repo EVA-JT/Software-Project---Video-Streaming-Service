@@ -6,6 +6,7 @@ logged_user = "sample"
 choosen_profile = "sample"
 
 # --- DATABASE DE FILMES E GENEROS ---
+quality_list = ["low", "medium", "high"]
 
 genres_list = ["action", "comedy", "romance"]
 
@@ -52,6 +53,15 @@ all_catalog = {
 
 # ------
 
+# --- UTILIDADES ---
+
+#Imprime todos os perfis criados no momento
+def print_profiles():
+    for i in range(len(profile_list)):
+        print(i, " - ", profile_list[i]["first"], profile_list[i]['last'])
+
+#------
+
 #Cria uma conta do usuario, usando email, uma senha e o plano de pagamento e salva essas informações no dicionario de dados do usuario
 def create_a_user():
     while(1): # Loop até um email novo ser digitado      
@@ -92,11 +102,6 @@ def user_login():
     else:
         input("Wrong email or password, try again or create an account.")
         return 0 #falha
-
-#Imprime todos os perfis criados no momento
-def print_profiles():
-    for i in range(len(profile_list)):
-        print(i, " - ", profile_list[i]["first"], profile_list[i]['last'])
 
 #Pede as informações nescessárias do usuario para criar um perfil
 def create_profile():
@@ -150,6 +155,7 @@ def create_profile():
         'age': age,
         'c_preference': category_preference,
         'g_preference': fav_genres,
+        'bandwidth': "",
         'bookmarks': [],
         'w_history': []
     }
@@ -241,17 +247,29 @@ def show_details(genre, category, title):
 
     print(f"Title: {title}\nSinopsis: {choosen_one['sinopsis']}\nYear: {choosen_one['year']}\nRating: {choosen_one['rating']}\n")
 
-    opt = int(input("1 - Watch\n2 - Bookmark it\n3 - Exit\n"))
+    opt = int(input("1 - Watch\n2 - Bookmark it\n3 - Bandwidth settings\n4 - Exit\n"))
 
     #salva o item assistido no histórico
     if opt == 1:
+        if choosen_profile['bandwidth'] == "":
+            while(1):
+                b_w = input("In what quality do you want to watch, 'Low', 'Medium' or 'High'? (We recommend 'High' for your bandwidth)\n")
+                b_w = b_w.lower()
+
+                if b_w in quality_list:
+                    choosen_profile['bandwidth'] = b_w
+                    break
+                else:
+                    input("Error. Press enter to try again")
+
+
         history = {
             'genre': genre,
             'category': category,
             'title': title
         }
         choosen_profile['w_history'].append(history)
-        input(f"You've just watched {title}. Press enter to continue")
+        input(f"You've just watched {title} in {choosen_profile['bandwidth']} quality. Press enter to continue")
     #salva o item nos bookmarks
     elif opt == 2:
         bookmark = {
@@ -261,7 +279,23 @@ def show_details(genre, category, title):
         }
         choosen_profile['bookmarks'].append(bookmark)
         input(f"{title} has just been added to your bookmarks. Press enter to continue.")
-    
+    elif opt == 3:
+        if choosen_profile['bandwidth'] == "":
+            print("You haven't chosen your preferred quality.")
+        else:
+            print(f"Your current choosen quality is: {choosen_profile['bandwidth']}")
+
+            while(1):
+                b_w = input("In what quality do you want to watch, 'Low', 'Medium' or 'High'? (We recommend 'High' for your bandwidth)\nType 'exit' to cancel.\n")
+                b_w = b_w.lower()
+
+                if b_w == "exit":
+                    show_details(genre, category, title)
+                    break
+                elif b_w in quality_list:
+                    choosen_profile['bandwidth'] = b_w
+                    input(f"Your preferred quality is now {b_w}. Press enter to continue")
+                    break
     return
 
 #Mostra o catalogo baseado nos parametros
