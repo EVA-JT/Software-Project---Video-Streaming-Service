@@ -15,6 +15,9 @@ Implementada, ao "assistir" algo ou salva-lo as informações de genero, categor
 ### • Personalized Recommendations:
 Implementada, na criação de perfil o usuario pode escolher qual categoria e genero(s) são seus preferidos e no menu principal, ao escolher a página de recomendações, itens são impressos baseado nas escolhas feitas na criação. TO DO: Permitir certa modificação das opções, sendo baseadas no histórico ou sendo modificadas nas configurações.;
 
+### • Bandwidth Optimization:
+Implementada, ao assistir algo pela primeira vez em um perfil, o usuario pode escolher com que qualidade assistir-lo, podendo escolher entre low, medium e high. Essa escolha pode ser configurada na página de detalhes do item. O programa sempre recomendará high para o usuario;
+
 ### • Content Rating and Reviews:
 A ser implementada;
 
@@ -26,6 +29,3 @@ A ser implementada posteriormente, por não ser possivel de se fazer no terminal
 
 ### • Parental Control Settings:
 A ser implementada usando informações do perfil escolhido e dos filmes no catalógo;
-
-### • Bandwidth Optimization:
-A ser implementada de maneira simples, como uma opção antes de assistir algo;
