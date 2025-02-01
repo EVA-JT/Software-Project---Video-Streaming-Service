@@ -24,8 +24,8 @@ Implementada, os usuarios podem ver e deixar uma review. Essas informações fic
 ### • Ad Integration and Management:
 A ser implementada, com banners e/ou conteúdo patrocinado no catálogo.
 
-### • Multi-Device Streaming:
-A ser implementada posteriormente, por não ser possivel de se fazer no terminal.;
-
 ### • Parental Control Settings:
 A ser implementada usando informações do perfil escolhido e dos filmes no catalógo;
+
+### • Multi-Device Streaming:
+A ser implementada posteriormente, por não ser possivel de se fazer no terminal.;
