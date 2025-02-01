@@ -1,57 +1,14 @@
 import os
 
+from data import movie_catalog
+from data import show_catalog
+from data import quality_list
+from data import genres_list
+
 profile_list = []
 user_data = {}
 logged_user = "sample"
 choosen_profile = "sample"
-
-# --- DATABASE DE FILMES E GENEROS ---
-quality_list = ["low", "medium", "high"]
-
-genres_list = ["action", "comedy", "romance"]
-
-movie_catalog = {
-    "action": {
-        "action movie 1": {"sinopsis": "sample sample", "year": "1990", "rating": "10+"},
-        "action movie 2": {"sinopsis": "sample sample", "year": "2001", "rating": "18+"},
-        "action movie 3": {"sinopsis": "sample sample", "year": "2005", "rating": "All ages"}
-    },
-    "comedy": {
-        "comedy movie 1":{"sinopsis": "sample sample", "year": "1990", "rating": "10+"},
-        "comedy movie 2":{"sinopsis": "sample sample", "year": "2001", "rating": "18+"},
-        "comedy movie 3":{"sinopsis": "sample sample", "year": "2005", "rating": "All ages"}
-    },
-    "romance": {
-        "romance movie 1":{"sinopsis": "sample sample", "year": "1990", "rating": "10+"},
-        "romance movie 2":{"sinopsis": "sample sample", "year": "2001", "rating": "18+"},
-        "romance movie 3":{"sinopsis": "sample sample", "year": "2005", "rating": "All ages"}
-    }
-}
-
-show_catalog = {
-    "action": {
-        "action show 1": {"sinopsis": "sample sample", "year": "1990", "rating": "10+"},
-        "action show 2": {"sinopsis": "sample sample", "year": "2001", "rating": "18+"},
-        "action show 3": {"sinopsis": "sample sample", "year": "2005", "rating": "All ages"}
-    },
-    "comedy": {
-        "comedy show 1":{"sinopsis": "sample sample", "year": "1990", "rating": "10+"},
-        "comedy show 2":{"sinopsis": "sample sample", "year": "2001", "rating": "18+"},
-        "comedy show 3":{"sinopsis": "sample sample", "year": "2005", "rating": "All ages"}
-    },
-    "romance": {
-        "romance show 1":{"sinopsis": "sample sample", "year": "1990", "rating": "10+"},
-        "romance show 2":{"sinopsis": "sample sample", "year": "2001", "rating": "18+"},
-        "romance show 3":{"sinopsis": "sample sample", "year": "2005", "rating": "All ages"}
-    }
-}
-
-all_catalog = {
-    "movie": movie_catalog,
-    "show": show_catalog
-}
-
-# ------
 
 # --- UTILIDADES ---
 
@@ -60,7 +17,49 @@ def print_profiles():
     for i in range(len(profile_list)):
         print(i, " - ", profile_list[i]["first"], profile_list[i]['last'])
 
+def calculate_review_score(movie_dict):
+    reviews = movie_dict['reviews']
+    scores_sum = 0
+    scores = 0
+
+    for reviwer in reviews:
+        scores_sum += reviews[reviwer]['score']
+        scores += 1
+    
+    if scores == 0:
+        return -1
+    else:
+        return scores_sum / scores
+    
+def print_reviews(movie_dict):
+    reviews = movie_dict['reviews']
+    reviews_sum = 0
+
+    for reviwer in reviews:
+        if reviews[reviwer]['review'] != "":
+            print(f"{reviwer} : {reviews[reviwer]['review']}")
+            reviews_sum += 1
+
+    if reviews_sum == 0:
+        print("There are no reviews for this title at the moment")
+
 #------
+
+def review_page(movie_dict, title):
+    global choosen_profile 
+    reviews = movie_dict['reviews']
+
+    score = int(input(f"What would you rate {title} out of 10?\n"))
+    review = input("Write your review: ")
+
+    reviewer_name = choosen_profile['first']
+    reviews[reviewer_name] = {
+        "score": score,
+        "review": review
+    }
+    
+    input("Your review has been saved. Press enter to continue.")
+
 
 #Cria uma conta do usuario, usando email, uma senha e o plano de pagamento e salva essas informações no dicionario de dados do usuario
 def create_a_user():
@@ -174,11 +173,12 @@ def delete_profile():
 
 #Escolhe o perfil
 def choose_profile():
+    global choosen_profile 
     print("Which profile would you like to use?")
     print_profiles()
     user_choice = int(input())
 
-    global choosen_profile 
+    
     choosen_profile = profile_list[user_choice]
 
 #Página de configuração da conta do usuário
@@ -247,7 +247,7 @@ def show_details(genre, category, title):
 
     print(f"Title: {title}\nSinopsis: {choosen_one['sinopsis']}\nYear: {choosen_one['year']}\nRating: {choosen_one['rating']}\n")
 
-    opt = int(input("1 - Watch\n2 - Bookmark it\n3 - Bandwidth settings\n4 - Exit\n"))
+    opt = int(input("1 - Watch\n2 - Bookmark it\n3 - Bandwidth settings\n4 - Show reviews\n5 - Exit\n"))
 
     #salva o item assistido no histórico
     if opt == 1:
@@ -296,6 +296,13 @@ def show_details(genre, category, title):
                     choosen_profile['bandwidth'] = b_w
                     input(f"Your preferred quality is now {b_w}. Press enter to continue")
                     break
+    elif opt == 4:
+        opt = int(input("Would you like to:\n1 - Leave a review\n2 - See the current score and reviews\n3 - Exit\n")) #add fallback
+        if opt == 1:
+            review_page(choosen_one, title)
+        elif opt == 2:
+            print_reviews(choosen_one)
+        
     return
 
 #Mostra o catalogo baseado nos parametros
@@ -482,5 +489,5 @@ def main_menu():
             return
 
 #---
-    
+
 login_menu()
