@@ -25,7 +25,7 @@ Implementada, os usuarios podem ver e deixar uma review. Essas informações fic
 Implementada, ads aparecem no catálogo e após assistir algum item.
 
 ### • Parental Control Settings:
-A ser implementada usando informações do perfil escolhido e dos filmes no catalógo;
+Implementada, ao criar um perfil e digitar a idade o usuario pod escolher ligar o controle parental, se ligado o catálogo é filtrado a partir da idade do perfil.;
 
 ### • Multi-Device Streaming:
 A ser implementada posteriormente, por não ser possivel de se fazer no terminal.;
