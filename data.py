@@ -4,7 +4,6 @@ genres_list = ["action", "comedy", "romance"]
 
 movie_catalog = {
     "action": {
-
         "action movie 1": {
             "sinopsis": "sample sample",
             "year": "1990",
@@ -183,7 +182,24 @@ show_catalog = {
     }
 }
 
+ad = {
+    "banner":{
+        "ad_placement1":"sample",
+        "ad_placement2":"sample",
+        "ad_placement3":"sample"
+    },
+    "placement":{
+        "movie":{
+            
+        },
+        "show":{
+
+        }
+    }
+}
+
 all_catalog = {
     "movie": movie_catalog,
     "show": show_catalog
 }
+
