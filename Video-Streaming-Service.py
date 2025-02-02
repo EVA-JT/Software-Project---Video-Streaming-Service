@@ -1,9 +1,11 @@
 import os
+import random
 
 from data import movie_catalog
 from data import show_catalog
 from data import quality_list
 from data import genres_list
+from data import ad
 
 profile_list = []
 user_data = {}
@@ -43,6 +45,12 @@ def print_reviews(movie_dict):
     if reviews_sum == 0:
         print("There are no reviews for this title at the moment")
 
+def show_ad():
+    random_ad_key = random.choice(list(ad["banner"].keys()))
+    random_ad_value = ad["banner"][random_ad_key]
+
+    print(f"Product placement:\n{random_ad_key}: {random_ad_value}")
+    
 #------
 
 def review_page(movie_dict, title):
@@ -262,13 +270,15 @@ def show_details(genre, category, title):
                 else:
                     input("Error. Press enter to try again")
 
-
         history = {
             'genre': genre,
             'category': category,
             'title': title
         }
         choosen_profile['w_history'].append(history)
+        
+        print("\n")
+        show_ad()
         input(f"You've just watched {title} in {choosen_profile['bandwidth']} quality. Press enter to continue")
     #salva o item nos bookmarks
     elif opt == 2:
@@ -316,7 +326,8 @@ def show_catalogs(category, genre):
         genre = [genre]
 
     if category == "movie" or category == "all":
-        print("Movies:")
+        show_ad()
+        print("\nMovies:")
         for gen in genre:
             print(f"\n{gen.title()}:")
 
@@ -327,6 +338,7 @@ def show_catalogs(category, genre):
 
     
     if category == "show" or category == "all":
+        show_ad()
         print("\n\nShows:")
         for gen in genre:
             print(f"\n{gen.title()}")
