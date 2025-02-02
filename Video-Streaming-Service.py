@@ -6,6 +6,7 @@ from data import show_catalog
 from data import quality_list
 from data import genres_list
 from data import ad
+from data import rating_list
 
 profile_list = []
 user_data = {}
@@ -49,7 +50,7 @@ def show_ad():
     random_ad_key = random.choice(list(ad["banner"].keys()))
     random_ad_value = ad["banner"][random_ad_key]
 
-    print(f"Product placement:\n{random_ad_key}: {random_ad_value}")
+    print(f"\nProduct placement:\n{random_ad_key}: {random_ad_value}")
     
 #------
 
@@ -116,7 +117,19 @@ def create_profile():
     print("Create a profile!")
     first_name = input("First name: ")
     last_name = input("Last name: ")
-    age = input("Your age: ")
+    age = int(input("Your age: "))
+
+    if age < 15:
+        while(1):
+            opt = input("Would you like to enable parental controls on this profile? Y/N\n")
+            if opt == "Y" or "y":
+                print("Parental Controls were enabled.")
+                parental_controls = True
+                break
+            elif opt == "N" or "n":
+                print("Parental Controls were not enabled.")
+                parental_controls = False
+                break
 
     while(1):
         category_preference = input("Do you prefer: movies, shows or both? ")
@@ -162,6 +175,7 @@ def create_profile():
         'age': age,
         'c_preference': category_preference,
         'g_preference': fav_genres,
+        'parental_controls': parental_controls,
         'bandwidth': "",
         'bookmarks': [],
         'w_history': []
@@ -253,7 +267,9 @@ def show_details(genre, category, title):
     else:
         choosen_one = show_catalog[genre][title]
 
-    print(f"Title: {title}\nSinopsis: {choosen_one['sinopsis']}\nYear: {choosen_one['year']}\nRating: {choosen_one['rating']}\n")
+    rating = rating_list[choosen_one['rating']]
+
+    print(f"Title: {title}\nSinopsis: {choosen_one['sinopsis']}\nYear: {choosen_one['year']}\nRating: {rating}\n")
 
     opt = int(input("1 - Watch\n2 - Bookmark it\n3 - Bandwidth settings\n4 - Show reviews\n5 - Exit\n"))
 
@@ -276,7 +292,7 @@ def show_details(genre, category, title):
             'title': title
         }
         choosen_profile['w_history'].append(history)
-        
+
         print("\n")
         show_ad()
         input(f"You've just watched {title} in {choosen_profile['bandwidth']} quality. Press enter to continue")
@@ -320,6 +336,8 @@ def show_details(genre, category, title):
 #GENRE: uma lista de strings ou uma string que pode ser qualquer genero da genres_list[]
 def show_catalogs(category, genre):
     os.system('cls')
+    global choosen_profile
+
     i = 1
     titles = []
     if isinstance(genre, str): #se 'genre' for uma string, transforma ela em uma lista
@@ -332,9 +350,12 @@ def show_catalogs(category, genre):
             print(f"\n{gen.title()}:")
 
             for movie in movie_catalog[gen].keys():
-                print(f"{i} - {movie} | ", end='')
-                i += 1
-                titles.append((gen, "movie", movie)) #guarda a tupla do genero, categoria e titulo do filme
+                movie_rating = movie_catalog[gen][movie]['rating']
+
+                if choosen_profile['parental_controls'] is False or movie_rating <= choosen_profile['age']:
+                    print(f"{i} - {movie} | ", end='')
+                    i += 1
+                    titles.append((gen, "movie", movie)) #guarda a tupla do genero, categoria e titulo do filme
 
     
     if category == "show" or category == "all":
@@ -344,9 +365,12 @@ def show_catalogs(category, genre):
             print(f"\n{gen.title()}")
 
             for show in show_catalog[gen].keys():
-                print(f"{i} - {show} | ", end='')
-                i += 1
-                titles.append((gen, "show", show))
+                show_rating = show_catalog[gen][show]['rating']
+
+                if choosen_profile['parental_controls'] is False or show_rating <= choosen_profile['age']:
+                    print(f"{i} - {show} | ", end='')
+                    i += 1
+                    titles.append((gen, "show", show))
 
     opt = int(input(f"\n\nEnter the number of wich item you want to watch: "))
     genre_c, category_c, title_c = titles[opt - 1] #como o i começa em 1, opt deve ser subtraida
