@@ -22,7 +22,7 @@ Implementada, ao assistir algo pela primeira vez em um perfil, o usuario pode es
 Implementada, os usuarios podem ver e deixar uma review. Essas informações ficarão salvas nas informações do filme.;
 
 ### • Ad Integration and Management:
-A ser implementada, com banners e/ou conteúdo patrocinado no catálogo.
+Implementada, ads aparecem no catálogo e após assistir algum item.
 
 ### • Parental Control Settings:
 A ser implementada usando informações do perfil escolhido e dos filmes no catalógo;
